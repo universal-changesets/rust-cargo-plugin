@@ -1,15 +1,15 @@
 [package]
 name = "rust-cargo-plugin"
-version = "0.1.0"
+version = "1.0.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
 crate-type = ["cdylib"]
+name = "plugin"
 
 [dependencies]
 extism-pdk = "1.3.0"
-serde = { version = "1.0.213", features = ["derive"] }
+serde = { version = "1.0.214", features = ["derive"] }
 extism-convert = "1.8.0"
 toml = "0.8.19"
 toml_edit = "0.22.22"
