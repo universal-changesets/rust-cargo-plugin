@@ -20,7 +20,7 @@ jobs:
           target: wasm32-wasip1
 
       - name: Build
-        run: cargo build --release
+        run: cargo build --release --target wasm32-wasip1
 
       - name: Create SHA256 checksum
         run: sha256sum target/wasm32-wasip1/release/plugin.wasm > target/wasm32-wasip1/release/plugin.wasm.sha256

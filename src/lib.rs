@@ -4,31 +4,32 @@ use serde::Deserialize;
 use std::fs;
 use toml_edit::{value, DocumentMut};
 
+const CARGO_TOML_PATH: &str = "Cargo.toml";
+
+#[derive(Debug, Deserialize)]
+struct SetVersionRequest {
+    version: String,
+}
+
 #[plugin_fn]
-pub fn get_version(path: String) -> FnResult<String> {
-    let version = get_toml_value(path);
+pub fn get_version(_: String) -> FnResult<String> {
+    let version = get_toml_value(CARGO_TOML_PATH);
     match version {
         Ok(contents) => Ok(contents),
         Err(e) => Ok(e.to_string()),
     }
 }
 
-fn get_toml_value(path: String) -> Result<String, Error> {
+fn get_toml_value(path: &str) -> Result<String, Error> {
     let file_contents = std::fs::read_to_string(path)?;
     let document = file_contents.parse::<DocumentMut>().unwrap();
     let version = document["package"]["version"].as_str().unwrap().to_string();
     Ok(version)
 }
 
-#[derive(Debug, Deserialize)]
-struct SetVersionRequest {
-    version: String,
-    path: String,
-}
-
 #[plugin_fn]
 pub fn set_version(input: Json<SetVersionRequest>) -> FnResult<()> {
-    update_package_section(&input.0.path, &input.0.version)?;
+    update_package_section(CARGO_TOML_PATH, &input.0.version)?;
 
     Ok(())
 }
@@ -66,12 +67,12 @@ mod tests {
     fn test_get_version(#[case] input: &str, #[case] expected: &str) {
         let dir = tempdir().unwrap();
 
-        let temp_file = dir.path().join("cargo.toml");
+        let temp_file = dir.path().join(CARGO_TOML_PATH);
         let mut file = File::create(&temp_file).unwrap();
 
         write!(file, "{}", input).unwrap();
 
-        let version = get_toml_value(temp_file.to_str().unwrap().to_string()).unwrap();
+        let version = get_toml_value(temp_file.to_str().unwrap()).unwrap();
 
         similar_asserts::assert_eq!(version, expected);
     }
@@ -89,7 +90,7 @@ mod tests {
     ) {
         let dir = tempdir().unwrap();
 
-        let temp_file = dir.path().join("cargo.toml");
+        let temp_file = dir.path().join(CARGO_TOML_PATH);
         let mut file = File::create(&temp_file).unwrap();
 
         write!(file, "{}", input).unwrap();
