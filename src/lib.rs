@@ -16,13 +16,13 @@ pub fn get_version(_: String) -> FnResult<String> {
     let version = get_toml_value(CARGO_TOML_PATH);
     match version {
         Ok(contents) => Ok(contents),
-        Err(e) => Ok(e.to_string()),
+        Err(e) => Err(WithReturnCode::new(e, 1)),
     }
 }
 
 fn get_toml_value(path: &str) -> Result<String, Error> {
     let file_contents = std::fs::read_to_string(path)?;
-    let document = file_contents.parse::<DocumentMut>().unwrap();
+    let document = file_contents.parse::<DocumentMut>()?;
     let version = document["package"]["version"].as_str().unwrap().to_string();
     Ok(version)
 }
@@ -37,7 +37,7 @@ pub fn set_version(input: Json<SetVersionRequest>) -> FnResult<()> {
 fn update_package_section(file_path: &str, new_version: &str) -> Result<(), Error> {
     let contents = fs::read_to_string(file_path)?;
 
-    let mut document = contents.parse::<DocumentMut>().unwrap();
+    let mut document = contents.parse::<DocumentMut>()?;
 
     if let Some(package) = document.get_mut("package") {
         if let Some(version) = package.get_mut("version") {
