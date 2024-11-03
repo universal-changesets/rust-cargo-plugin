@@ -23,7 +23,12 @@ jobs:
         run: cargo build --release --target wasm32-wasip1
 
       - name: Create SHA256 checksum
-        run: sha256sum target/wasm32-wasip1/release/plugin.wasm > target/wasm32-wasip1/release/plugin.wasm.sha256
+        id: sha256
+        run: |
+          echo "sha=$(sha256sum target/wasm32-wasip1/release/plugin.wasm | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+
+      - name: Create SHA256 checksum file
+        run: echo ${{ steps.sha256.outputs.sha }} > target/wasm32-wasip1/release/plugin.wasm.sha256
 
       - name: Create Release
         id: create_release
@@ -32,6 +37,10 @@ jobs:
           files: |
             target/wasm32-wasip1/release/plugin.wasm
             target/wasm32-wasip1/release/plugin.wasm.sha256
+          name: v${{ github.ref_name }}
+          body: |
+            SHA256 checksums: ${{ steps.sha256.outputs.sha }}
+          append_body: true
           draft: false
           prerelease: false
           generate_release_notes: true
