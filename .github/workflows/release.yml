@@ -39,7 +39,7 @@ jobs:
             target/wasm32-wasip1/release/plugin.wasm.sha256
           name: v${{ github.ref_name }}
           body: |
-            SHA256 checksums: ${{ steps.sha256.outputs.sha }}
+            plugin sha256: `${{ steps.sha256.outputs.sha }}`
           append_body: true
           draft: false
           prerelease: false
