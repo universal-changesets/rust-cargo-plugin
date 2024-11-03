@@ -1,2 +1,2 @@
 build:
-	cargo build --release
+	cargo build --release --target wasm32-wasip1
