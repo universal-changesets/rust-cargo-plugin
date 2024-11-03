@@ -20,8 +20,9 @@ pub fn get_version(_: String) -> FnResult<String> {
     }
 }
 
-fn get_toml_value(path: &str) -> Result<String, Error> {
-    let file_contents = std::fs::read_to_string(path)?;
+/// Get the version of the package from the `Cargo.toml` file.
+fn get_toml_value(toml_path: &str) -> Result<String, Error> {
+    let file_contents = std::fs::read_to_string(toml_path)?;
     let document = file_contents.parse::<DocumentMut>()?;
     let version = document["package"]["version"].as_str().unwrap().to_string();
     Ok(version)
@@ -34,6 +35,7 @@ pub fn set_version(input: Json<SetVersionRequest>) -> FnResult<()> {
     Ok(())
 }
 
+/// Update the version of the package in the `Cargo.toml` file to the given version.
 fn update_package_section(file_path: &str, new_version: &str) -> Result<(), Error> {
     let contents = fs::read_to_string(file_path)?;
 
