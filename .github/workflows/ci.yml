@@ -18,6 +18,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          target: wasm32-wasip1
       - run: cargo test --all-features
 
   formatting:
@@ -28,6 +30,7 @@ jobs:
       - uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           components: rustfmt
+          target: wasm32-wasip1
       - name: Rustfmt Check
         uses: actions-rust-lang/rustfmt@v1
 
@@ -37,4 +40,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          target: wasm32-wasip1
       - run: cargo build --all-features
